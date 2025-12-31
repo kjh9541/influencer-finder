@@ -24,6 +24,12 @@ interface StoreState {
     clearSelection: () => void;
 }
 
+// User specified fixed categories
+const FIXED_CATEGORIES = [
+    '일상', '식품', '육아', '리빙', '패션',
+    '다이어트', '뷰티', '여행', '피트니스', '교육'
+];
+
 export const useInfluencerStore = create<StoreState>((set, get) => ({
     influencers: [],
     filteredInfluencers: [],
@@ -53,13 +59,11 @@ export const useInfluencerStore = create<StoreState>((set, get) => ({
         set({ isLoading: true, error: null });
         try {
             const data = await parseCSV('/data.csv');
-            // Extract individual categories from space-separated strings
-            const allCategories = data.flatMap(i => i.category.split(/\s+/).filter(Boolean));
-            const uniqueCategories = Array.from(new Set(allCategories)).sort();
 
+            // Ignore dynamic categories, use fixed list
             set({
                 influencers: data,
-                categories: ['All', ...uniqueCategories],
+                categories: ['All', ...FIXED_CATEGORIES],
                 filteredInfluencers: sortData(data, get().sortBy) // Initial sort
             });
         } catch (err: any) {
@@ -102,7 +106,20 @@ export const useInfluencerStore = create<StoreState>((set, get) => ({
 
         // Filter by Category
         if (selectedCategory !== 'All') {
-            result = result.filter((i) => i.category.split(/\s+/).includes(selectedCategory));
+            result = result.filter((i) => {
+                const catStr = i.category;
+                // Special mappings or keyword matching
+                if (selectedCategory === '식품') {
+                    // Match 식품, F&B, 푸드
+                    return catStr.includes('식품') || catStr.includes('F&B') || catStr.includes('푸드');
+                }
+                if (selectedCategory === '리빙') {
+                    return catStr.includes('리빙') || catStr.includes('홈');
+                }
+
+                // Fallback: check if the selected category keyword is contained in the influencer's category string
+                return catStr.includes(selectedCategory);
+            });
         }
 
         // Filter by Search

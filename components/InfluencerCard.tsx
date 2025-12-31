@@ -10,9 +10,13 @@ interface Props {
 }
 
 const formatFollowers = (num: number) => {
-    if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
-    if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
-    return num.toString();
+    if (num >= 10000) {
+        // Format to 1 decimal place, convert to '만' (ten thousand)
+        // Remove trailing .0 if present (e.g., 6.0만 -> 6만) - optional but cleaner
+        // User example '6.8만' suggests keeping decimal.
+        return (num / 10000).toFixed(1).replace(/\.0$/, '') + '만';
+    }
+    return num.toLocaleString();
 };
 
 export default function InfluencerCard({ data }: Props) {
