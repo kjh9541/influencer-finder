@@ -40,13 +40,25 @@ export default function InfluencerCard({ data }: Props) {
         // but since it is an anchor tag, browser handles it.
     };
 
+    const handleCardClick = () => {
+        window.open(`https://instagram.com/${data.instagram_id}`, '_blank');
+    };
+
+    const handleCheckboxClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        toggleSelection(data.instagram_id);
+    };
+
     return (
         <div
             className={`relative bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 p-6 flex flex-col items-center border group cursor-pointer ${isSelected ? 'border-pink-500 ring-2 ring-pink-500 ring-opacity-10' : 'border-gray-100'
                 }`}
-            onClick={() => toggleSelection(data.instagram_id)}
+            onClick={handleCardClick}
         >
-            <div className="absolute top-3 right-3">
+            <div
+                className="absolute top-3 right-3 z-10 p-1 hover:scale-110 transition-transform"
+                onClick={handleCheckboxClick}
+            >
                 <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${isSelected ? 'bg-pink-500 border-pink-500' : 'border-gray-200 bg-white'
                     }`}>
                     {isSelected && <Check className="w-3 h-3 text-white" />}
