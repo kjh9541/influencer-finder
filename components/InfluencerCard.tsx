@@ -20,28 +20,18 @@ const formatFollowers = (num: number) => {
 };
 
 export default function InfluencerCard({ data }: Props) {
-    const [imageUrl, setImageUrl] = useState<string | null>(null);
-    const [loading, setLoading] = useState(true);
+    // Use local image path directly
+    const imagePath = `/images/profiles/${data.instagram_id}.jpg`;
+    const [imageError, setImageError] = useState(false);
+    const [imageLoaded, setImageLoaded] = useState(false);
+
     const { selectedIds, toggleSelection } = useInfluencerStore();
     const isSelected = selectedIds.includes(data.instagram_id);
 
+    // Reset state when data changes
     useEffect(() => {
-        let isMounted = true;
-        const fetchImage = async () => {
-            try {
-                const res = await fetch(`/api/instagram?username=${data.instagram_id}`);
-                if (res.ok) {
-                    const json = await res.json();
-                    if (json.url && isMounted) setImageUrl(json.url);
-                }
-            } catch (e) {
-                // quiet fail
-            } finally {
-                if (isMounted) setLoading(false);
-            }
-        };
-        fetchImage();
-        return () => { isMounted = false; };
+        setImageError(false);
+        setImageLoaded(false);
     }, [data.instagram_id]);
 
     const handleIdClick = (e: React.MouseEvent) => {
@@ -65,15 +55,17 @@ export default function InfluencerCard({ data }: Props) {
 
             <div className="relative w-24 h-24 mb-4">
                 <div className={`w-full h-full rounded-full overflow-hidden bg-gray-100 flex items-center justify-center border-2 border-transparent group-hover:border-pink-500 transition-colors duration-300`}>
-                    {loading ? (
-                        <div className="animate-pulse w-full h-full bg-gray-200" />
-                    ) : imageUrl ? (
-                        <img
-                            src={imageUrl}
-                            alt={data.name}
-                            className="w-full h-full object-cover"
-                            onError={() => setImageUrl(null)} // Fallback if URL fails to load
-                        />
+                    {!imageError ? (
+                        <>
+                            {!imageLoaded && <div className="absolute inset-0 animate-pulse bg-gray-200" />}
+                            <img
+                                src={imagePath}
+                                alt={data.name}
+                                className={`w-full h-full object-cover transition-opacity duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
+                                onLoad={() => setImageLoaded(true)}
+                                onError={() => setImageError(true)}
+                            />
+                        </>
                     ) : (
                         <User className="w-10 h-10 text-gray-400" />
                     )}
