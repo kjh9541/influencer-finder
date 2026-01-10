@@ -29,6 +29,14 @@ export default function Home() {
               <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600">
                 Influencer Finder
               </h1>
+              <a
+                href="https://www.notion.so/AI-2e4b9367c91480fc9381de6ab629c082?source=copy_link"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="ml-4 flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-sm font-semibold rounded-full shadow-sm hover:shadow-md hover:scale-105 transition-all duration-200"
+              >
+                <span>🤖 AI 공구 소싱 달력</span>
+              </a>
             </div>
 
             <SearchBar />
